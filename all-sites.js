@@ -15,9 +15,14 @@ if (s) times = JSON.parse(s);
 times++;
 localStorage.setItem(window.location.href, `${times}`);
 
-window.addEventListener("load", () => {
+function onload() {
   document.body.style.cssText = `
-    box-sizing:border-box;
-    border: ${times}px solid green;
-  `;
-});
+  box-sizing:border-box;
+  border: ${times}px solid green;
+`;
+}
+
+// fuck this event listener document? body? window? fuck em
+window.addEventListener("load", onload);
+document.addEventListener("load", onload);
+document.body.addEventListener("load", onload);
