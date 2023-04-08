@@ -8,6 +8,13 @@
 // @description 3/27/2023, 6:25:19 PM
 // ==/UserScript==
 
+// statuses:
+// variantele au ori _var_ ori _test_ in ele (le-am numit idiuri)
+// si cand ajungi in barem inlocuiesti aia cu _bar_
+// dar cand ajungi in barem el nu stie ce id era
+// si daca stochezi fiecare id e nasol
+// de accea stochezi doar pe alea care nu sunt _var_ si el devine def
+
 //https://bac.simplu.info/vezi-pdf/web/viewer
 const Toolbar = document.getElementById("toolbarViewerRight");
 
@@ -54,17 +61,23 @@ const CreateAndAppendToolbarImg = (src, onclick = () => {}) => {
 var IsBarem = () => {
   if (toSubiectIcon) return;
   toSubiectIcon = CreateAndAppendToolbarImg(to_subiect_base64, () => {
+    var s = localStorage.getItem(window.location.href);
+    window.location.replace(window.location.href.replace("_bar_", s));
     window.location.replace(window.location.href.replace("_bar_", "_var_"));
+    window.location.replace(window.location.href.replace("_bar_", "_test_"));
   });
 };
-var IsSubiect = () => {
+var IsSubiect = (id) => {
   if (!statusIcon) {
     statusIcon = CreateAndAppendToolbarImg(notdone_base64, toggleStatus);
     updateStatusIcon();
   }
   if (!toBaremIcon) {
-    toBaremIcon = CreateAndAppendToolbarImg(to_barem_base64, () => {
-      window.location.replace(window.location.href.replace("_var_", "_bar_"));
+    toBaremIcon = CreateAndAppendToolbarImg(to_barem_base64, (e) => {
+      localStorage.setItem(window.location.href.replace(id, "_bar_"), id);
+      const newlink = window.location.href.replace(id, "_bar_");
+      if (e.ctrlKey) return; // popup
+      window.location.replace(newlink);
     });
   }
   //   if(!handPointerIcon){
@@ -88,7 +101,10 @@ var IsSubiect = () => {
 window.addEventListener("load", () => {
   isDone = getStatus();
   if (window.location.href.includes("_bar_")) IsBarem();
-  if (window.location.href.includes("_var_")) IsSubiect();
+
+  const ids = ["_var_", "_test_"];
+  for (let i = 0; i < ids.length; i++)
+    if (window.location.href.includes(ids[i])) return IsSubiect(ids[i]);
 });
 
 var handPointerStyles = `
