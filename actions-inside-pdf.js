@@ -24,12 +24,11 @@ var toBaremIcon;
 var toSubiectIcon;
 var handPointerIcon;
 
-const setYForHand = (a) =>
-  localStorage.setItem(window.location.href + "-y", `${a}`);
-const getYForHand = () => {
-  let result = JSON.parse(localStorage.getItem(window.location.href + "-y"));
-  return result == null ? 0 : result;
-};
+// const setYForHand = (a) => localStorage.setItem(window.location.href + '-y', `${a}`);
+// const getYForHand = () => {
+//   let result = JSON.parse(localStorage.getItem(window.location.href + '-y'))
+//   return result == null ? 0 : result;
+// }
 const setStatus = (a) =>
   localStorage.setItem(window.location.href + "-checked", `${a}`);
 const getStatus = () => {
@@ -61,10 +60,9 @@ const CreateAndAppendToolbarImg = (src, onclick = () => {}) => {
 var IsBarem = () => {
   if (toSubiectIcon) return;
   toSubiectIcon = CreateAndAppendToolbarImg(to_subiect_base64, () => {
-    var s = localStorage.getItem(window.location.href);
+    var s = localStorage.getItem(window.location.href + "-testid");
+    if (s == null) s = "_var_";
     window.location.replace(window.location.href.replace("_bar_", s));
-    window.location.replace(window.location.href.replace("_bar_", "_var_"));
-    window.location.replace(window.location.href.replace("_bar_", "_test_"));
   });
 };
 var IsSubiect = (id) => {
@@ -74,10 +72,14 @@ var IsSubiect = (id) => {
   }
   if (!toBaremIcon) {
     toBaremIcon = CreateAndAppendToolbarImg(to_barem_base64, (e) => {
-      localStorage.setItem(window.location.href.replace(id, "_bar_"), id);
-      const newlink = window.location.href.replace(id, "_bar_");
+      const baremlink = window.location.href.replace(id, "_bar_");
+      if (id != "_var_") localStorage.setItem(baremlink + "-testid", id);
+      // this else removes "_test_" from ls cuz inbarem we take what's in the ls
+      // and if _test_ was present it would take that instead of _var_
+      // we do not store _var_ cuz we save like half the space
+      else localStorage.removeItem(baremlink + "-testid");
       if (e.ctrlKey) return; // popup
-      window.location.replace(newlink);
+      window.location.replace(baremlink);
     });
   }
   //   if(!handPointerIcon){
