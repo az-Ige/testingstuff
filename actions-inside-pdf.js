@@ -14,6 +14,10 @@
 // dar cand ajungi in barem el nu stie ce id era
 // si daca stochezi fiecare id e nasol
 // de accea stochezi doar pe alea care nu sunt _var_ si el devine def
+//
+// daca intrii direct in barem si dai catre test dar testu ala are idiul de _test_
+// atunci te va redirectiona la un test cu _var_ care nu exista
+// bugul asta n-o sal rezolv, ca mi-e greu si nu cred ca se merita
 
 //https://bac.simplu.info/vezi-pdf/web/viewer
 const Toolbar = document.getElementById("toolbarViewerRight");
@@ -59,10 +63,12 @@ const CreateAndAppendToolbarImg = (src, onclick = () => {}) => {
 };
 var IsBarem = () => {
   if (toSubiectIcon) return;
-  toSubiectIcon = CreateAndAppendToolbarImg(to_subiect_base64, () => {
-    var s = localStorage.getItem(window.location.href + "-testid");
-    if (s == null) s = "_var_";
-    window.location.replace(window.location.href.replace("_bar_", s));
+  toSubiectIcon = CreateAndAppendToolbarImg(to_subiect_base64, (e) => {
+    var id = localStorage.getItem(window.location.href + "-testid");
+    if (id == null) id = "_var_";
+    const testlink = window.location.href.replace("_bar_", id);
+    if (e.ctrlKey) return window.open(testlink);
+    window.location.replace(testlink);
   });
 };
 var IsSubiect = (id) => {
@@ -78,7 +84,7 @@ var IsSubiect = (id) => {
       // and if _test_ was present it would take that instead of _var_
       // we do not store _var_ cuz we save like half the space
       else localStorage.removeItem(baremlink + "-testid");
-      if (e.ctrlKey) return; // popup
+      if (e.ctrlKey) return window.open(baremlink);
       window.location.replace(baremlink);
     });
   }
